@@ -25,12 +25,18 @@ pub unsafe extern "C" fn Java_com_wasmer_android_MainActivity_JNIExecuteWasm(
     let module_bytes = env.convert_byte_array(module_bytes).unwrap();
     let main_instance = load_module(&module_bytes);
 
+    // Succeeds
+    java_test_acual(&env, &callback);
+
     let class = env.new_global_ref(callback).unwrap();
     *CLASS.lock().unwrap() = Some(class);
     let vm = env.get_java_vm().unwrap();
     *ENV.lock().unwrap() = Some(vm);
 
+    // but the call inside wasm fails
     main_instance.call("main", &[]).unwrap();
+
+    java_test_acual(&env, &callback);
 }
 
 pub fn load_module(module_bytes: &[u8]) -> Instance {
