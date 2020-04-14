@@ -3,7 +3,7 @@
 - The `android` folder contains an android project that uses the built files through symlinks. Run it with for example by connecting your android ARM phone to your computer with developer usb debugging mode on, and afterwards open the `android` folder in android studio and press the play button at the top of android studio once your phone shows up.
 - Any log should appear for example in the `Run` tab of android studio at the bottom.
 
-Running on Pixel2 API 29 x86_64 emulator produces the following where last 3 lines show a successfull call:
+Running on Pixel2 API 29 x86_64 emulator produces the following where the prints show a successfull call:
 ```
 
 04/14 17:15:52: Launching 'app' on Pixel 2 API 29.
@@ -42,7 +42,7 @@ D/eglCodecCommon: setVertexArrayObject: set vao to 0 (0) 1 0
 ```
 
 
-Running on Huawei P30 actual phone produces the following where last 3 lines show a failure of a JNI call:
+Running on Huawei P30 actual phone produces the following where last 3 lines show a failure of the JNI call:
 ```
 
 04/14 17:16:44: Launching 'app' on HUAWEI ELE-L29.
