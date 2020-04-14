@@ -1,0 +1,17 @@
+[package]
+name = "wasmer_android"
+version = "0.1.0"
+authors = []
+edition = "2018"
+
+[lib]
+crate-type = ["dylib"]
+
+[dependencies]
+jni = { version = "0.16.0", default-features = false }
+lazy_static = "1.4.0"
+wasmer-runtime = { default-features = false, git = "https://github.com/wasmerio/wasmer.git", rev = "4703e78250a4f68305a7eab6ccf4f34e63a32833" }
+wasmer-singlepass-backend = { optional = true, git = "https://github.com/wasmerio/wasmer.git", rev = "4703e78250a4f68305a7eab6ccf4f34e63a32833" }
+
+[features]
+singlepass = ["wasmer-singlepass-backend", "wasmer-runtime/default-backend-singlepass"]

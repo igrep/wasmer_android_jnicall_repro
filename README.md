@@ -1,0 +1,4 @@
+- Go to `test_module` folder and build it according to instructions in `README.md`.
+- Go to `android_runtime` folder and build it according to instructions in `README.md`.
+- The `android` folder contains an android project that uses the built files through symlinks. Run it with for example by connecting your android ARM phone to your computer with developer usb debugging mode on, and afterwards open the `android` folder in android studio and press the play button at the top of android studio once your phone shows up.
+- Any log should appear for example in the `Run` tab of android studio at the bottom.
