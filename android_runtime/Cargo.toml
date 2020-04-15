@@ -10,8 +10,10 @@ crate-type = ["dylib"]
 [dependencies]
 jni = { version = "0.16.0", default-features = false }
 lazy_static = "1.4.0"
+android_logger = "0.8"
 wasmer-runtime = { default-features = false, git = "https://github.com/wasmerio/wasmer.git", rev = "4703e78250a4f68305a7eab6ccf4f34e63a32833" }
 wasmer-singlepass-backend = { optional = true, git = "https://github.com/wasmerio/wasmer.git", rev = "4703e78250a4f68305a7eab6ccf4f34e63a32833" }
+log = "0.4"
 
 [features]
 singlepass = ["wasmer-singlepass-backend", "wasmer-runtime/default-backend-singlepass"]

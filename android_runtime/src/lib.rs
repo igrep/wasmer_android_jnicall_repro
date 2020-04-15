@@ -1,7 +1,10 @@
-#[macro_use]
-extern crate lazy_static;
+#[macro_use] extern crate lazy_static;
 extern crate jni;
+#[macro_use] extern crate log;
+extern crate android_logger;
 
+use log::Level;
+use android_logger::Config;
 use jni::{
     objects::{GlobalRef, JClass, JObject},
     sys::jbyteArray,
@@ -22,21 +25,32 @@ pub unsafe extern "C" fn Java_com_wasmer_android_MainActivity_JNIExecuteWasm(
     callback: JObject,
     module_bytes: jbyteArray,
 ) {
+    android_logger::init_once(
+        Config::default().with_min_level(Level::Trace)
+    );
+
+    std::panic::set_hook(Box::new(|panic_info| {
+        error!("ERR: {}", panic_info.to_string());
+    }));
+
+    // build module
     let module_bytes = env.convert_byte_array(module_bytes).unwrap();
     let main_instance = load_module(&module_bytes);
 
-    // Succeeds
-    java_test_acual(&env, &callback);
-
+    // set global variables
     let class = env.new_global_ref(callback).unwrap();
     *CLASS.lock().unwrap() = Some(class);
     let vm = env.get_java_vm().unwrap();
     *ENV.lock().unwrap() = Some(vm);
 
-    // but the call inside wasm fails
+    // Succeeds
+    java_test();
+    java_test();
+
+    // fails to call java_test
     main_instance.call("main", &[]).unwrap();
 
-    java_test_acual(&env, &callback);
+    java_test();
 }
 
 pub fn load_module(module_bytes: &[u8]) -> Instance {
@@ -58,7 +72,7 @@ fn create_import_object(_module: &Module) -> ImportObject {
     import_object
 }
 
-fn java_test(_ctx: &mut Ctx) {
+fn java_test() {
     // Get env.
     let ovm = &*ENV.lock().unwrap();
     let vm = ovm.as_ref().unwrap();
@@ -68,10 +82,6 @@ fn java_test(_ctx: &mut Ctx) {
     let class_ref = o_class.as_ref().unwrap();
     let class = class_ref.as_obj();
     // Call java code.
-    java_test_acual(&env, &class);
-}
-
-fn java_test_acual(env: &JNIEnv, class: &JObject) {
     env.call_method(*class, "Test", "()V", &[])
         .unwrap();
 }
