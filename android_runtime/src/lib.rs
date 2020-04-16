@@ -82,6 +82,16 @@ fn java_test() {
     let class_ref = o_class.as_ref().unwrap();
     let class = class_ref.as_obj();
     // Call java code.
-    env.call_method(*class, "Test", "()V", &[])
-        .unwrap();
+    match env.call_method(*class, "Test", "()V", &[]) {
+        Ok(_) => {}
+        Err(jerr) => {
+            let k = jerr.kind();
+            if let ErrorKind::JavaException = k {
+                let jex = env.exception_occurred().unwrap();
+                env.throw(jex).unwrap();
+            } else {
+                error!("Unexpected kind of JavaException: {}", k);
+            }
+        }
+    }
 }
