@@ -69,9 +69,9 @@ checksum = "cf1de2fe8c75bc145a2f577add951f8134889b4795d47466a54a5c846d691693"
 
 [[package]]
 name = "blake3"
-version = "0.2.3"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "667d945f23cefed0b5f973af35c4bc3319caa6776fbda270e4897d8504afa8e4"
+checksum = "550fc503a8b30d8dcbe2217ab58c3367ada2137e5df2aec91d39f4a53e4ffada"
 dependencies = [
  "arrayref",
  "arrayvec",
@@ -585,7 +585,6 @@ dependencies = [
 [[package]]
 name = "wasmer-runtime"
 version = "0.16.2"
-source = "git+https://github.com/wasmerio/wasmer.git?rev=4703e78250a4f68305a7eab6ccf4f34e63a32833#4703e78250a4f68305a7eab6ccf4f34e63a32833"
 dependencies = [
  "lazy_static",
  "memmap",
@@ -598,7 +597,6 @@ dependencies = [
 [[package]]
 name = "wasmer-runtime-core"
 version = "0.16.2"
-source = "git+https://github.com/wasmerio/wasmer.git?rev=4703e78250a4f68305a7eab6ccf4f34e63a32833#4703e78250a4f68305a7eab6ccf4f34e63a32833"
 dependencies = [
  "bincode",
  "blake3",
@@ -626,7 +624,6 @@ dependencies = [
 [[package]]
 name = "wasmer-singlepass-backend"
 version = "0.16.2"
-source = "git+https://github.com/wasmerio/wasmer.git?rev=4703e78250a4f68305a7eab6ccf4f34e63a32833#4703e78250a4f68305a7eab6ccf4f34e63a32833"
 dependencies = [
  "bincode",
  "byteorder",
