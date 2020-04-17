@@ -1,15 +1,18 @@
-#[macro_use] extern crate lazy_static;
+#[macro_use]
+extern crate lazy_static;
 extern crate jni;
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate log;
 extern crate android_logger;
 
-use log::Level;
 use android_logger::Config;
 use jni::{
+    errors::ErrorKind,
     objects::{GlobalRef, JClass, JObject},
     sys::jbyteArray,
     JNIEnv, JavaVM,
 };
+use log::Level;
 use std::sync::Mutex;
 use wasmer_runtime::{compile, func, imports, Ctx, ImportObject, Instance, Module};
 
@@ -25,9 +28,7 @@ pub unsafe extern "C" fn Java_com_wasmer_android_MainActivity_JNIExecuteWasm(
     callback: JObject,
     module_bytes: jbyteArray,
 ) {
-    android_logger::init_once(
-        Config::default().with_min_level(Level::Trace)
-    );
+    android_logger::init_once(Config::default().with_min_level(Level::Trace));
 
     std::panic::set_hook(Box::new(|panic_info| {
         error!("ERR: {}", panic_info.to_string());
