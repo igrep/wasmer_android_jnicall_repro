@@ -4,17 +4,20 @@ extern crate jni;
 #[macro_use]
 extern crate log;
 extern crate android_logger;
+extern crate simplelog;
 
-use android_logger::Config;
 use jni::{
     errors::ErrorKind,
-    objects::{GlobalRef, JClass, JObject},
+    objects::{GlobalRef, JClass, JObject, JString},
     sys::jbyteArray,
     JNIEnv, JavaVM,
 };
 use log::Level;
+use simplelog::*;
+use std::ffi::CStr;
+use std::fs::File;
 use std::sync::Mutex;
-use wasmer_runtime::{compile, func, imports, Ctx, ImportObject, Instance, Module};
+use wasmer_runtime::{compile, func, imports, ImportObject, Instance, Module};
 
 lazy_static! {
     static ref ENV: Mutex<Option<JavaVM>> = { Mutex::new(None) };
@@ -26,9 +29,13 @@ pub unsafe extern "C" fn Java_com_wasmer_android_MainActivity_JNIExecuteWasm(
     env: JNIEnv,
     _: JClass,
     callback: JObject,
+    jlog_path: JString,
     module_bytes: jbyteArray,
 ) {
-    android_logger::init_once(Config::default().with_min_level(Level::Trace));
+    if let Err(err) = init_simplelog(&env, jlog_path) {
+        init_android_logger();
+        warn!("{}", err);
+    }
 
     std::panic::set_hook(Box::new(|panic_info| {
         error!("ERR: {}", panic_info.to_string());
@@ -54,6 +61,28 @@ pub unsafe extern "C" fn Java_com_wasmer_android_MainActivity_JNIExecuteWasm(
     java_test();
 }
 
+fn init_android_logger() {
+    android_logger::init_once(android_logger::Config::default().with_min_level(Level::Trace));
+}
+
+fn init_simplelog(env: &JNIEnv, jlog_path: JString) -> Result<(), String> {
+    let log_path = unsafe {
+        CStr::from_ptr(
+            env.get_string(jlog_path)
+                .map_err(|err| err.to_string())?
+                .as_ptr(),
+        )
+    }
+    .to_str()
+    .map_err(|err| err.to_string())?;
+    WriteLogger::init(
+        LevelFilter::Trace,
+        Config::default(),
+        File::create(log_path).map_err(|err| err.to_string())?,
+    )
+    .map_err(|err| err.to_string())
+}
+
 pub fn load_module(module_bytes: &[u8]) -> Instance {
     // Compile the module.
     let module = compile(&module_bytes).unwrap();
@@ -74,6 +103,7 @@ fn create_import_object(_module: &Module) -> ImportObject {
 }
 
 fn java_test() {
+    info!("BEGIN java_test");
     // Get env.
     let ovm = &*ENV.lock().unwrap();
     let vm = ovm.as_ref().unwrap();
