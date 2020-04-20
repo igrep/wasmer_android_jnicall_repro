@@ -7,12 +7,11 @@ extern crate android_logger;
 
 use jni::{
     errors::ErrorKind,
-    objects::{GlobalRef, JClass, JObject, JString},
+    objects::{GlobalRef, JClass, JObject},
     sys::jbyteArray,
     JNIEnv, JavaVM,
 };
 use log::Level;
-use std::fs::File;
 use std::sync::Mutex;
 use std::thread;
 use wasmer_runtime::{compile, func, imports, ImportObject, Instance, Module};
@@ -87,7 +86,7 @@ fn java_test() {
     // Get env.
     let ovm = &*ENV.lock().unwrap();
     let vm = ovm.as_ref().unwrap();
-    let env = vm.get_env().unwrap();
+    let env = vm.attach_current_thread().unwrap();
     // Get the class.
     let o_class = &*CLASS.lock().unwrap();
     let class_ref = o_class.as_ref().unwrap();
