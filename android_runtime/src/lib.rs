@@ -17,6 +17,7 @@ use simplelog::*;
 use std::ffi::CStr;
 use std::fs::File;
 use std::sync::Mutex;
+use std::thread;
 use wasmer_runtime::{compile, func, imports, ImportObject, Instance, Module};
 
 lazy_static! {
@@ -96,10 +97,14 @@ pub fn load_module(module_bytes: &[u8]) -> Instance {
 fn create_import_object(_module: &Module) -> ImportObject {
     let import_object = imports! {
         "env" => {
-            "Test" => func!(java_test),
+            "Test" => func!(spawn_java_test),
         },
     };
     import_object
+}
+
+fn spawn_java_test() {
+    thread::spawn(java_test);
 }
 
 fn java_test() {
@@ -113,6 +118,7 @@ fn java_test() {
     let class_ref = o_class.as_ref().unwrap();
     let class = class_ref.as_obj();
     // Call java code.
+    info!("      java_test: before calling Java method");
     match env.call_method(*class, "Test", "()V", &[]) {
         Ok(_) => {}
         Err(jerr) => {
