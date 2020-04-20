@@ -4,7 +4,6 @@ extern crate jni;
 #[macro_use]
 extern crate log;
 extern crate android_logger;
-extern crate simplelog;
 
 use jni::{
     errors::ErrorKind,
@@ -13,8 +12,6 @@ use jni::{
     JNIEnv, JavaVM,
 };
 use log::Level;
-use simplelog::*;
-use std::ffi::CStr;
 use std::fs::File;
 use std::sync::Mutex;
 use std::thread;
@@ -30,13 +27,9 @@ pub unsafe extern "C" fn Java_com_wasmer_android_MainActivity_JNIExecuteWasm(
     env: JNIEnv,
     _: JClass,
     callback: JObject,
-    jlog_path: JString,
     module_bytes: jbyteArray,
 ) {
-    if let Err(err) = init_simplelog(&env, jlog_path) {
-        init_android_logger();
-        warn!("{}", err);
-    }
+    init_android_logger();
 
     std::panic::set_hook(Box::new(|panic_info| {
         error!("ERR: {}", panic_info.to_string());
@@ -64,24 +57,6 @@ pub unsafe extern "C" fn Java_com_wasmer_android_MainActivity_JNIExecuteWasm(
 
 fn init_android_logger() {
     android_logger::init_once(android_logger::Config::default().with_min_level(Level::Trace));
-}
-
-fn init_simplelog(env: &JNIEnv, jlog_path: JString) -> Result<(), String> {
-    let log_path = unsafe {
-        CStr::from_ptr(
-            env.get_string(jlog_path)
-                .map_err(|err| err.to_string())?
-                .as_ptr(),
-        )
-    }
-    .to_str()
-    .map_err(|err| err.to_string())?;
-    WriteLogger::init(
-        LevelFilter::Trace,
-        Config::default(),
-        File::create(log_path).map_err(|err| err.to_string())?,
-    )
-    .map_err(|err| err.to_string())
 }
 
 pub fn load_module(module_bytes: &[u8]) -> Instance {

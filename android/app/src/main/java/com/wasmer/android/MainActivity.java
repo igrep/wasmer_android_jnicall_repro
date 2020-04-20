@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
-    private static native void JNIExecuteWasm(MainActivity self, String logPath, byte[] module_bytes) throws Exception;
+    private static native void JNIExecuteWasm(MainActivity self, byte[] module_bytes) throws Exception;
 
     @Keep
     public void Test() {
@@ -45,8 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Run the file
             System.out.println("Calling JNIExecuteWasm!");
-            String logPath = getFilesDir().toString() + "/wasmer_android.log";
-            JNIExecuteWasm(this, logPath, module_bytes);
+            JNIExecuteWasm(this, module_bytes);
             System.out.println("Finished calling JNIExecuteWasm!");
         } catch (Exception e) {
             e.printStackTrace();

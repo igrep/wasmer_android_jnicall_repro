@@ -11,7 +11,6 @@ crate-type = ["dylib"]
 jni = { version = "0.16.0", default-features = false }
 lazy_static = "1.4.0"
 android_logger = "0.8"
-simplelog = "0.7.5"
 wasmer-runtime = { default-features = false, path = "../wasmer/lib/runtime/", features = ["singlepass", "default-backend-singlepass"] }
 wasmer-singlepass-backend = { optional = true, path = "../wasmer/lib/singlepass-backend/" }
 log = "0.4"
